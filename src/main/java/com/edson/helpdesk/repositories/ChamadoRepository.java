@@ -2,8 +2,8 @@ package com.edson.helpdesk.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.edson.helpdesk.domain.Tecnico;
+import com.edson.helpdesk.domain.Chamado;
 
-public interface ChamadoRepository extends JpaRepository<Tecnico, Integer> {
+public interface ChamadoRepository extends JpaRepository<Chamado, Integer> {
 
 }
