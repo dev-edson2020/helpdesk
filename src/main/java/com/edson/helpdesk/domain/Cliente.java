@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
+import com.edson.helpdesk.domain.dtos.ClienteDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 //import com.edson.helpdesk.domain.dtos.ClienteDTO;
 import com.edson.helpdesk.domain.enums.Perfil;
@@ -28,6 +29,9 @@ public class Cliente extends Pessoa {
 		super(id, nome, cpf, email, senha);
 		addPerfil(Perfil.CLIENTE);
 	}
+
+    public Cliente(ClienteDTO objDTO) {
+    }
 
 //	public Cliente(ClienteDTO obj) {
 //		super();

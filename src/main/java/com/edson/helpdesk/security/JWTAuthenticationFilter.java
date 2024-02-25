@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.edson.helpdesk.domain.dtos.CredenciaisDTO;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,7 +17,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.edson.helpdesk.domain.dtos.CredenciaisDTO;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -34,7 +34,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			throws AuthenticationException {
 		try {
 			CredenciaisDTO creds = new ObjectMapper().readValue(request.getInputStream(), CredenciaisDTO.class);
-			UsernamePasswordAuthenticationToken authenticationToken = 
+			UsernamePasswordAuthenticationToken authenticationToken =
 					new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getSenha(), new ArrayList<>());
 			Authentication authentication = authenticationManager.authenticate(authenticationToken);
 			return authentication;
@@ -42,25 +42,25 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
-    protected void successfulAuthentication(HttpServletRequest req,
-                                            HttpServletResponse res,
-                                            FilterChain chain,
-                                            Authentication auth) throws IOException, ServletException {
-	
+	protected void successfulAuthentication(HttpServletRequest req,
+											HttpServletResponse res,
+											FilterChain chain,
+											Authentication auth) throws IOException, ServletException {
+
 		String username = ((UserSS) auth.getPrincipal()).getUsername();
 		String token = jwtUtil.generateToken(username);
-		response.setHeader("Access-Control-Allow-Origin", "*");
-        	response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
-        	response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, enctype, Location");
-        	response.setHeader("Authorization", "Bearer " + token);
+		res.setHeader("Access-Control-Allow-Origin", "*");
+		res.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
+		res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, enctype, Location");
+		res.setHeader("Authorization", "Bearer " + token);
 	}
-	
+
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException failed) throws IOException, ServletException {
-		
+											  AuthenticationException failed) throws IOException, ServletException {
+
 		response.setStatus(401);
 		response.setContentType("application/json");
 		response.getWriter().append(json());
@@ -69,11 +69,11 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	private CharSequence json() {
 		long date = new Date().getTime();
 		return "{"
-				+ "\"timestamp\": " + date + ", " 
+				+ "\"timestamp\": " + date + ", "
 				+ "\"status\": 401, "
 				+ "\"error\": \"Não autorizado\", "
 				+ "\"message\": \"Email ou senha inválidos\", "
 				+ "\"path\": \"/login\"}";
 	}
-	
+
 }
